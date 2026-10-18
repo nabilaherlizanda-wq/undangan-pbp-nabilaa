@@ -1,0 +1,143 @@
+/* ===== Variabel warna ===== */
+:root {
+  --marun: #5a1a1f;
+  --marun-tua: #2e0a0d;
+  --emas: #b8923f;
+  --emas-muda: #f0d58a;
+  --krem: #f6e6d6;
+}
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--marun-tua);
+  overflow: hidden;                 /* tidak ada scroll */
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Cormorant Garamond", serif;
+  color: var(--marun);
+}
+
+/* ===== Stage: selalu rasio 9:16 seperti gambar (675x1200) ===== */
+.stage {
+  position: relative; overflow: hidden;
+  height: min(100svh, 100vw * 16 / 9);
+  aspect-ratio: 9 / 16;
+  container-type: inline-size;      /* supaya ukuran font bisa pakai satuan cqw (ikut lebar stage) */
+  box-shadow: 0 0 60px rgba(0,0,0,.5);
+}
+/* font-size TIDAK boleh di .stage sendiri: satuan cqw dihitung dari container induknya,
+   jadi harus dipasang di anak-anaknya */
+.kartu, #amplop { font-size: 3.7cqw; }
+
+/* ===== Halaman isi: kartu sebagai background ===== */
+.kartu {
+  position: absolute; inset: 0;
+  background: url("kartu.jpg") center / 100% 100% no-repeat;
+}
+/* Kotak tempat teks, dihitung agar pas di dalam bingkai emas */
+.isi {
+  position: absolute; top: 29%; bottom: 19%; left: 15%; right: 13%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ===== Amplop: dua separuh gambar cover ===== */
+#amplop { position: absolute; inset: 0; z-index: 10; transition: opacity .3s ease; }
+.separuh {
+  position: absolute; top: 0; bottom: 0; width: 50.3%;
+  background: url("cover.jpg") no-repeat;
+  background-size: 200% 100%;       /* gambar dibuat 2x lebar, tiap separuh menampilkan sebagian */
+  transition: transform 1.5s cubic-bezier(.7, 0, .2, 1);
+}
+.kiri  { left: 0;  background-position: left top;  }
+.kanan { right: 0; background-position: right top; }
+
+/* Tombol transparan tepat di atas segel pada gambar */
+#segel {
+  position: absolute; left: 50%; top: 48%;
+  width: 30%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  border: 0; border-radius: 50%; background: transparent; cursor: pointer;
+}
+#segel::after {                      /* cincin berdenyut sebagai petunjuk */
+  content: ""; position: absolute; inset: 4%;
+  border: 2px solid var(--emas-muda); border-radius: 50%;
+  animation: denyut 2s ease-out infinite;
+}
+@keyframes denyut { from { transform: scale(.85); opacity: .9; } to { transform: scale(1.3); opacity: 0; } }
+#segel:focus-visible { outline: 3px solid var(--emas-muda); }
+.petunjuk {
+  position: absolute; left: 0; right: 0; top: 63%; margin: 0; text-align: center;
+  color: var(--emas-muda); letter-spacing: .12em; font-size: .95em;
+  text-shadow: 0 1px 6px rgba(0,0,0,.7);
+}
+
+/* Keadaan terbuka: class .open ditambah oleh JS */
+#amplop.open .kiri  { transform: translateX(-102%); }
+#amplop.open .kanan { transform: translateX(102%); }
+#amplop.open .petunjuk, #amplop.open #segel { opacity: 0; transition: opacity .3s; }
+#amplop.open { opacity: 0; pointer-events: none; transition: opacity .5s ease 1.1s; }
+
+/* ===== Slide: hanya .active yang tampil ===== */
+.slide { display: none; width: 100%; }
+.slide.active { display: block; animation: masuk .6s ease; }
+.slide.pergi { opacity: 0; transition: opacity .35s ease; }
+@keyframes masuk { from { opacity: 0; transform: translateY(10px); } }
+
+/* Teks kecil huruf kapital berjarak, seperti di desain referensi */
+.label  { margin: 0 0 .5em; font-size: .62em; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; color: var(--emas); }
+.judul  { margin: 0 0 .4em; font-size: 1.5em; font-weight: 600; }
+.nama   { font-size: 2.3em; font-weight: 600; line-height: 1.05; margin: 0; }
+.nama i { font-weight: 500; font-size: .75em; color: var(--emas); }
+.garis  { width: 28%; margin: .5em auto; border: 0; border-top: 2px solid var(--emas); opacity: 1; }
+.kalimat{ font-size: .85em; line-height: 1.4; margin: 0; }
+
+.keluarga small { display: block; font-size: .62em; letter-spacing: .18em; text-transform: uppercase; color: var(--emas); font-weight: 700; }
+.keluarga b     { display: block; font-size: .95em; line-height: 1.2; margin-top: .15em; }
+.sekat          { border-left: 1px solid var(--emas); }
+
+/* Bingkai tanggal: dua garis emas (border + inset shadow) */
+.bingkai-tgl {
+  width: 58%; margin: 0 auto; padding: .6em .4em;
+  border: 2px solid var(--emas); border-radius: 1.6em;
+  background: rgba(255,255,255,.35);
+  box-shadow: inset 0 0 0 4px #f3e3d3, inset 0 0 0 5px var(--emas);
+}
+.angka { font-size: 3.4em; font-weight: 600; line-height: 1; }
+.bln   { font-size: .95em; letter-spacing: .3em; font-weight: 600; margin-top: .15em; }
+.titik { font-size: .5em; color: var(--emas); margin: .2em 0; }
+.thn   { font-size: .95em; letter-spacing: .2em; font-weight: 600; }
+
+/* Pil dengan bingkai ganda untuk "Sabtu" dan jam */
+.pil {
+  display: inline-block; padding: .3em 1em; font-size: .85em; font-weight: 700; letter-spacing: .15em;
+  border: 1px solid var(--emas); border-radius: 999px; background: rgba(255,255,255,.4);
+  box-shadow: 0 0 0 3px #f3e3d3, 0 0 0 4px var(--emas);
+}
+
+.kotak { border: 1px solid var(--emas); border-radius: .7em; background: rgba(255,255,255,.4); padding: .4em 0; }
+.kotak b     { display: block; font-size: 1.6em; line-height: 1.1; }
+.kotak small { font-size: .62em; letter-spacing: .12em; text-transform: uppercase; color: var(--emas); font-weight: 700; }
+
+/* Peta berbentuk lengkung, mirip bingkai di screenshot */
+.peta {
+  width: 78%; height: 8.2em; margin: 0 auto .6em; overflow: hidden;
+  border: 2px solid var(--emas); border-radius: 5em 5em .8em .8em;
+  box-shadow: 0 0 0 3px #f3e3d3, 0 0 0 4px var(--emas);
+}
+.peta iframe { width: 100%; height: 100%; border: 0; filter: sepia(.35) saturate(.8); }
+.nama-tempat {
+  display: inline-block; padding: .25em 1em; margin-top: .4em; font-weight: 700; font-size: .95em;
+  border: 1px solid var(--emas); border-radius: .6em; background: rgba(255,255,255,.4);
+}
+.alamat { font-size: .72em; margin: .4em 0 .6em; }
+
+/* Tombol: kustomisasi di atas class .btn bawaan Bootstrap */
+.btn-emas {
+  background: rgba(255,255,255,.45); color: var(--marun);
+  border: 1px solid var(--emas); border-radius: 999px;
+  padding: .3em 1.2em; font-size: .85em; font-weight: 700; letter-spacing: .08em;
+  box-shadow: 0 0 0 3px #f3e3d3, 0 0 0 4px var(--emas);
+}
+.btn-emas:hover, .btn-emas:focus { background: var(--marun); color: var(--krem); }
+.btn-ulang { color: var(--emas); font-size: .8em; margin-top: .3em; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01s !important; }
+}
